@@ -30,11 +30,19 @@ async function run() {
 
         // Mongodb Collections
         const watchCategoryCollection = client.db('oWatchCheck').collection('WatchCategory')
+        const watchCategoryItemsCollection = client.db('oWatchCheck').collection('WatchCategoryItems')
 
 
         app.get('/watch-category', async (req, res) => {
             const query = {}
             const result = await watchCategoryCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/watch-category/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { category_id: id }
+            const result = await watchCategoryItemsCollection.find(filter).toArray()
             res.send(result)
         })
 
