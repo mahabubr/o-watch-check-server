@@ -4,7 +4,7 @@ require('colors');
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const port = process.env.PORT || 5000
@@ -43,6 +43,13 @@ async function run() {
             const id = req.params.id
             const filter = { category_id: id }
             const result = await watchCategoryItemsCollection.find(filter).toArray()
+            res.send(result)
+        })
+
+        app.get('/watch-category/watches/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const result = await watchCategoryItemsCollection.findOne(filter)
             res.send(result)
         })
 
