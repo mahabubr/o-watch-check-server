@@ -64,6 +64,12 @@ async function run() {
             res.send(result)
         })
 
+        app.post("/watch", async (req, res) => {
+            const product = req.body
+            const result = await watchCategoryItemsCollection.insertOne(product)
+            res.send(result)
+        })
+
         app.delete('/watch/:id', async (req, res) => {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
