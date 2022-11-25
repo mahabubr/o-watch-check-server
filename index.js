@@ -123,6 +123,32 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/all-users', async (req, res) => {
+            const query = {}
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/all-users/all-sellers', async (req, res) => {
+            const query = { role: 'seller' }
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/all-users/all-buyers', async (req, res) => {
+            const query = { role: 'buyer' }
+            const result = await usersCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.delete('/all-users/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const result = await usersCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
         // Advertised Products
 
         app.post('/advertised', async (req, res) => {
