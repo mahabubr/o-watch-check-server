@@ -31,8 +31,9 @@ async function run() {
         // Mongodb Collections
         const watchCategoryCollection = client.db('oWatchCheck').collection('WatchCategory')
         const watchCategoryItemsCollection = client.db('oWatchCheck').collection('WatchCategoryItems')
+        const myOrdersCollection = client.db('oWatchCheck').collection('MyOrders')
 
-
+        // Watch Category Area
         app.get('/watch-category', async (req, res) => {
             const query = {}
             const result = await watchCategoryCollection.find(query).toArray()
@@ -50,6 +51,21 @@ async function run() {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
             const result = await watchCategoryItemsCollection.findOne(filter)
+            res.send(result)
+        })
+
+        // My Order Area
+
+        app.post('/my-orders', async (req, res) => {
+            const orders = req.body
+            const result = await myOrdersCollection.insertOne(orders)
+            res.send(result)
+        })
+
+        app.get('/my-orders', async (req, res) => {
+            const email = req.query.email
+            const query = { booking_user_email: email }
+            const result = await myOrdersCollection.find(query).toArray()
             res.send(result)
         })
 
