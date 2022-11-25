@@ -35,6 +35,7 @@ async function run() {
         const watchCategoryItemsCollection = client.db('oWatchCheck').collection('WatchCategoryItems')
         const myOrdersCollection = client.db('oWatchCheck').collection('MyOrders')
         const paymentsCollection = client.db('oWatchCheck').collection('Payments')
+        const usersCollection = client.db('oWatchCheck').collection('Users')
 
         // Watch Category Area
         app.get('/watch-category', async (req, res) => {
@@ -89,6 +90,15 @@ async function run() {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
             const result = await myOrdersCollection.findOne(filter)
+            res.send(result)
+        })
+
+
+        // Sign Up User Information
+
+        app.post('/user', async (req, res) => {
+            const body = req.body
+            const result = await usersCollection.insertOne(body)
             res.send(result)
         })
 
