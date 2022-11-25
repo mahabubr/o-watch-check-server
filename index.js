@@ -36,6 +36,7 @@ async function run() {
         const myOrdersCollection = client.db('oWatchCheck').collection('MyOrders')
         const paymentsCollection = client.db('oWatchCheck').collection('Payments')
         const usersCollection = client.db('oWatchCheck').collection('Users')
+        const advertisedProductCollection = client.db('oWatchCheck').collection('Advertised')
 
         // Watch Category Area
         app.get('/watch-category', async (req, res) => {
@@ -61,6 +62,13 @@ async function run() {
         app.get('/watch', async (req, res) => {
             const query = {}
             const result = await watchCategoryItemsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.get('/watch/seller-product', async (req, res) => {
+            const query = req.query.email
+            const filter = { seller_email: query }
+            const result = await watchCategoryItemsCollection.find(filter).toArray()
             res.send(result)
         })
 
@@ -112,6 +120,21 @@ async function run() {
             const email = req.query.email
             const query = { email: email }
             const result = await usersCollection.findOne(query)
+            res.send(result)
+        })
+
+        // Advertised Products
+
+        app.post('/advertised', async (req, res) => {
+            const product = req.body
+            const result = await advertisedProductCollection.insertOne(product)
+            res.send(result)
+        })
+
+
+        app.get('/advertised', async (req, res) => {
+            const query = {}
+            const result = await advertisedProductCollection.find(query).toArray()
             res.send(result)
         })
 
