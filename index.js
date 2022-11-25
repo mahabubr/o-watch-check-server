@@ -34,6 +34,7 @@ async function run() {
         const watchCategoryCollection = client.db('oWatchCheck').collection('WatchCategory')
         const watchCategoryItemsCollection = client.db('oWatchCheck').collection('WatchCategoryItems')
         const myOrdersCollection = client.db('oWatchCheck').collection('MyOrders')
+        const paymentsCollection = client.db('oWatchCheck').collection('Payments')
 
         // Watch Category Area
         app.get('/watch-category', async (req, res) => {
@@ -100,6 +101,27 @@ async function run() {
             });
 
         })
+
+
+        app.post('/payments', async (req, res) => {
+            const payment = req.body
+            const result = await paymentsCollection.insertOne(payment)
+
+            const id = payment.payment_product_id
+            const filter = { _id: ObjectId(id) }
+
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionID: payment.transition_id
+                }
+            }
+
+            const updatedResult = await myOrdersCollection.updateOne(filter, updatedDoc)
+
+            res.send(result)
+        })
+
 
     }
     catch (e) {
