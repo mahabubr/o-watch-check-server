@@ -57,6 +57,19 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/watch', async (req, res) => {
+            const query = {}
+            const result = await watchCategoryItemsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        app.delete('/watch/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const result = await watchCategoryItemsCollection.deleteOne(filter)
+            res.send(result)
+        })
+
         // My Order Area
 
         app.post('/my-orders', async (req, res) => {
