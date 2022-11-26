@@ -165,6 +165,14 @@ async function run() {
         })
 
 
+        app.delete('/advertised/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { my_product_id: id }
+            const result = await advertisedProductCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
 
         // Stripe Payment Method
 
