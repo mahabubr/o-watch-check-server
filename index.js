@@ -5,6 +5,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+var jwt = require('jsonwebtoken');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
@@ -14,6 +15,25 @@ const port = process.env.PORT || 5000
 // Middle Ware
 app.use(express.json())
 app.use(cors())
+
+// Middle Were (JWT)
+
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).send({ message: 'unauthorized access' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, process.env.JWT_TOKEN_KEY, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'Forbidden access' });
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
 
 app.get('/', (req, res) => {
     res.send('O Watch Server Running')
@@ -92,6 +112,13 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/watch/isVerify/:email', async (req, res) => {
+            const email = req.params.email
+            const filter = { seller_email: email }
+            const result = await watchCategoryItemsCollection.findOne(filter)
+            res.send(result)
+        })
+
         app.delete('/watch/:id', async (req, res) => {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
@@ -107,14 +134,14 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/my-orders', async (req, res) => {
+        app.get('/my-orders', verifyJWT, async (req, res) => {
             const email = req.query.email
             const query = { booking_user_email: email }
             const result = await myOrdersCollection.find(query).toArray()
             res.send(result)
         })
 
-        app.get('/my-orders/:id', async (req, res) => {
+        app.get('/my-orders/:id', verifyJWT, async (req, res) => {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
             const result = await myOrdersCollection.findOne(filter)
@@ -172,7 +199,7 @@ async function run() {
         })
 
 
-        app.get('/advertised', async (req, res) => {
+        app.get('/advertised', verifyJWT, async (req, res) => {
             const query = {}
             const result = await advertisedProductCollection.find(query).toArray()
             res.send(result)
@@ -227,6 +254,15 @@ async function run() {
             const updatedResult = await myOrdersCollection.updateOne(filter, updatedDoc)
 
             res.send(result)
+        })
+
+
+        // Implement JSON WEB TOKEN
+
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            const token = jwt.sign(user, process.env.JWT_TOKEN_KEY, { expiresIn: '1d' })
+            res.send({ token })
         })
 
 
