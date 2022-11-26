@@ -78,6 +78,20 @@ async function run() {
             res.send(result)
         })
 
+        app.patch('/watch/verify-seller', async (req, res) => {
+            const email = req.query.email
+            const filter = { seller_email: email }
+            const userInfo = req.body
+            // const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    seller_verified: userInfo.status
+                }
+            }
+            const result = await watchCategoryItemsCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
+
         app.delete('/watch/:id', async (req, res) => {
             const id = req.params.id
             const filter = { _id: ObjectId(id) }
