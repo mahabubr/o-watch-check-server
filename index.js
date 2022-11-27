@@ -110,7 +110,7 @@ async function run() {
                     seller_verified: userInfo.status
                 }
             }
-            const result = await watchCategoryItemsCollection.updateOne(filter, updatedDoc)
+            const result = await watchCategoryItemsCollection.updateMany(filter, updatedDoc)
             res.send(result)
         })
 
