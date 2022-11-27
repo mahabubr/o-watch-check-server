@@ -57,6 +57,8 @@ async function run() {
         const paymentsCollection = client.db('oWatchCheck').collection('Payments')
         const usersCollection = client.db('oWatchCheck').collection('Users')
         const advertisedProductCollection = client.db('oWatchCheck').collection('Advertised')
+        const myWishlistCollection = client.db('oWatchCheck').collection('MyWishlist')
+        const reportedAdminCollection = client.db('oWatchCheck').collection('ReportedAdmin')
 
         // Watch Category Area
         app.get('/watch-category', async (req, res) => {
@@ -213,6 +215,40 @@ async function run() {
             res.send(result)
         })
 
+        // Add To Wishlist Page
+
+        app.post('/my-wishlist', async (req, res) => {
+            const wishlistItem = req.body
+            const result = await myWishlistCollection.insertOne(wishlistItem)
+            res.send(result)
+        })
+
+        app.get('/my-wishlist', async (req, res) => {
+            const email = req.query.email
+            const filter = { wishlist_buyer_email: email }
+            const result = await myWishlistCollection.find(filter).toArray()
+            res.send(result)
+        })
+
+        // Reported Admin
+
+        app.post('/reported-admin', async (req, res) => {
+            const reportedItem = req.body
+            const result = await reportedAdminCollection.insertOne(reportedItem)
+            res.send(result)
+        })
+
+        app.get('/reported-admin', async (req, res) => {
+            const query = {}
+            const result = await reportedAdminCollection.find(query).toArray()
+            res.send(result)
+        })
+        app.delete('/reported-admin/:id', async (req, res) => {
+            const query = req.params.id
+            const filter = { _id: ObjectId(query) }
+            const result = await reportedAdminCollection.deleteOne(filter)
+            res.send(result)
+        })
 
 
         // Stripe Payment Method
