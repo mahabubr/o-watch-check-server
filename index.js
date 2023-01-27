@@ -87,6 +87,32 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/arrival-products', async (req, res) => {
+            const query = {}
+            const result = await watchCategoryItemsCollection.find(query).limit(6).sort({ product_post_time: -1 }).toArray()
+            res.send(result)
+        })
+
+        app.get('/best-selling-products', async (req, res) => {
+            const query = {}
+            const result = await watchCategoryItemsCollection.find(query).limit(6).sort({ product_post_time: 1 }).toArray()
+            res.send(result)
+        })
+
+        app.get('/all-watch', async (req, res) => {
+            const search = req.query.search
+            let query = {}
+            if (search.length) {
+                query = {
+                    $text: {
+                        $search: search
+                    }
+                }
+            }
+            const result = await watchCategoryItemsCollection.find(query).toArray()
+            res.send(result)
+        })
+
         app.get('/watch/seller-product', async (req, res) => {
             const query = req.query.email
             const filter = { seller_email: query }
@@ -149,7 +175,6 @@ async function run() {
             const result = await myOrdersCollection.findOne(filter)
             res.send(result)
         })
-
 
         // Sign Up User Information
 
